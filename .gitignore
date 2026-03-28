@@ -1,0 +1,4 @@
+.agent-memory/
+node_modules/
+.DS_Store
+*.log
