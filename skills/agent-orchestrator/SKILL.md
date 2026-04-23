@@ -16,7 +16,7 @@ description: >
 user_invocable: true
 metadata:
   author: willneverusegit
-  version: '1.2'
+  version: '1.2.2'
   part-of: agent-orchestrator
   layer: orchestration
 ---
@@ -88,6 +88,13 @@ Der User gibt dir ein Ziel. Du zerlegst es, recherchierst, planst, setzt um, pru
      notebooklm source add --text "<consolidated findings>" --json
      ```
    - Das Notebook wird zur RAG-Wissensbasis fuer Phase 2+
+
+   **Skip NotebookLM wenn** alle folgenden Bedingungen zutreffen:
+   - Deliverable ist ein einzelnes Artefakt (1 Datei, 1 Dokument, 1 Antwort)
+   - Brainstormer-Outputs passen zusammen in den Orchestrator-Kontext (&lt; ~30k Tokens)
+   - Keine spaetere Wiederverwendung der Research geplant
+   
+   In diesem Fall halte die konsolidierte Zusammenfassung inline im Kontext und dokumentiere den Skip im Meta-Bericht (Phase 5). Der RAG-Overhead lohnt erst ab mehreren Subtasks oder grossen Research-Mengen.
 
 4. **Verbesserungsrunden (mind. 3)**
    - Runde 1: Identifiziere 3 Schwaechen in der Research (blinde Flecken, flache Abdeckung, fehlende Perspektiven). Fixe sie via zusaetzlicher Brainstormer.
@@ -163,6 +170,14 @@ Der User gibt dir ein Ziel. Du zerlegst es, recherchierst, planst, setzt um, pru
 
 **Fallback:** Wenn `codex-swarm` nicht verfuegbar ist, nutze das Agent tool direkt mit `model: "sonnet"` fuer jeden Subtask. Sequentiell oder parallel — je nach Abhaengigkeiten.
 
+**Opus-Self-Execution (Heuristik)** — der Orchestrator fuehrt den Subtask selbst aus statt Codex-Swarm zu dispatchen, wenn EINE der folgenden Bedingungen zutrifft:
+- **Weniger als 3 unabhaengige Subtasks** — Dispatch-Overhead uebersteigt den Parallelisierungs-Gewinn
+- **Reine Text-/Dokument-Aufgabe** mit bereits konsolidiertem Kontext (1-Seiter, Report-Sektion, Prosa-Synthese) — Opus ist in Schreibqualitaet in der Regel staerker als Codex-Modelle
+- **Kreative Syntheseaufgabe** (Narrativ-Zusammenfuehrung, pointierte Zusammenfassung, Nordstern-Formulierung)
+- **Subtask wurde 3x von Codex abgelehnt** (nach Phase-4-Quality-Gate-Limit)
+
+Bei Opus-Self-Execution: im Meta-Bericht explizit markieren ("Opus-Fallback: <Grund>"). Kein Qualitaetsverlust — das ist bewusste Arbeitsteilung, nicht Notloesung.
+
 ---
 
 ### Phase 4: Quality Gate
@@ -215,11 +230,45 @@ Der User gibt dir ein Ziel. Du zerlegst es, recherchierst, planst, setzt um, pru
    - **Emotionales:** Einfuehlsame Darstellung + konkrete Handlungsempfehlungen
 
 4. **Meta-Bericht**
-   Kurzer Orchestrator-Bericht am Ende:
-   - Phasen durchlaufen, Iterationen pro Phase
-   - Welche Agents eingesetzt, Token/Cost-Groessenordnung (falls bekannt)
-   - Was gut lief, was Re-Dispatches brauchte
-   - Einschaetzung der Deliverable-Qualitaet mit konkreter Begruendung
+   Kurzer Orchestrator-Bericht am Ende als separate Datei `meta-report.md` neben dem Deliverable. Nutze folgendes Template damit Meta-Berichte ueber Durchlaeufe hinweg vergleichbar bleiben:
+
+   ```markdown
+   # Meta-Bericht — <task-name>
+   *Datum: YYYY-MM-DD*
+   *Ziel: <original user goal verbatim>*
+   *Deliverable: <pfad zur haupt-datei>*
+   
+   ## Phasen-Durchlauf
+   ### Phase 1 — Research & Brainstorming
+   - Welche Brainstormer dispatcht (Standard-5 oder angepasst?)
+   - Runtime und Token-Groessenordnung
+   - NotebookLM: genutzt / uebersprungen (+ Grund)
+   - Verbesserungsrunden: wie viele, was hat sich geaendert
+   
+   ### Phase 2 — Strategische Planung
+   - Anzahl Subtasks + Abhaengigkeiten
+   - Akzeptanzkriterien (MUSS/SOLLTE/DARF-NICHT) — nur Counts, nicht voll ausschreiben
+   
+   ### Phase 3 — Execution
+   - Codex-Swarm oder Opus-Self-Execution (+ Grund bei Self-Execution)
+   - Modell-Wahl pro Subtask (gpt-5-4 / mini / codex-spark)
+   
+   ### Phase 4 — Quality Gate
+   - MUSS-Score, SOLLTE-Score (x/y Format)
+   - Re-Dispatches: Anzahl pro Subtask
+   
+   ### Phase 5 — Synthese & Delivery
+   - Deliverable-Format + Groesse
+   
+   ## Was gut lief
+   ## Was Re-Dispatches oder Fallbacks brauchte
+   ## Deliverable-Qualitaet (konkret, nicht Score)
+   ## Token-/Ressourcen-Groessenordnung
+   ## E2E-Verdikt: PASS/FAIL/PARTIAL + Begruendung
+   ## Empfehlungen (optional, bei auffaelligen Schwaechen im Skill selbst)
+   ```
+
+   **Nicht** jeder Abschnitt muss gefuellt werden — streiche leere Sektionen. Kein Fluff: jede Zeile traegt Information.
 
 ---
 
