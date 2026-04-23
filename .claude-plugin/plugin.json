@@ -1,9 +1,9 @@
 {
   "name": "agent-orchestrator",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Autonomer Meta-Agent-Orchestrator: Ein Opus 4.6 Agent der Haiku-Brainstormer, NotebookLM-RAG und Codex-Instanzen orchestriert um komplexe Aufgaben autonom zu loesen.",
-  "author": "willneverusegit",
-  "skills": [
-    "skills/agent-orchestrator"
-  ]
+  "author": {
+    "name": "willneverusegit",
+    "email": "noreply@local"
+  }
 }

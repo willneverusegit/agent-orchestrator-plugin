@@ -12,9 +12,10 @@
       "description": "5-phase autonomous orchestration: Research (5 Haiku agents) → Strategic Planning (NotebookLM RAG) → Execution (Codex swarm) → Quality Gate (9.0/10 threshold) → Synthesis (3-round self-critique).",
       "category": "development",
       "source": {
-        "source": "url",
-        "url": "https://github.com/willneverusegit/agent-orchestrator-plugin.git"
-      }
+        "source": "github",
+        "repo": "willneverusegit/agent-orchestrator-plugin"
+      },
+      "homepage": "https://github.com/willneverusegit/agent-orchestrator-plugin"
     }
   ]
 }

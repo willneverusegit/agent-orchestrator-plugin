@@ -1,4 +1,19 @@
+# Claude Code local settings (never commit — may contain paths/secrets)
+**/settings.local.json
+.claude/settings.local.json
+
+# Runtime / Memory artefacts
 .agent-memory/
-node_modules/
+bash.exe.stackdump
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+Thumbs.db
 .DS_Store
+
+# Logs and deps
+node_modules/
 *.log
