@@ -16,7 +16,7 @@ description: >
 user_invocable: true
 metadata:
   author: willneverusegit
-  version: '1.1'
+  version: '1.2'
   part-of: agent-orchestrator
   layer: orchestration
 ---
