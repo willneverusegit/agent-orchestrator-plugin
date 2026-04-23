@@ -64,19 +64,19 @@ Der User gibt dir ein Ziel. Du zerlegst es, recherchierst, planst, setzt um, pru
    - Definiere 3–5 Recherche-Dimensionen die abgedeckt werden muessen
 
 2. **5 Haiku-Brainstormer parallel spawnen**
-   Via Agent tool, `model: "haiku"`, alle in einem Message-Turn (paralleles Dispatching):
+   Via Agent tool, alle in einem Message-Turn (paralleles Dispatching). Der Plugin liefert 5 vordefinierte Agent-Typen aus `agents/` aus — jeder hat eine klar umrissene Rolle, festes Output-Format und explizite Boundaries:
 
-   ```
-   Agent 1: Fakten-Sammler    — harte Daten, Statistiken, existierende Loesungen
-   Agent 2: User-Perspektive  — Zielgruppe, Beduerfnisse, Pain Points
-   Agent 3: Querdenker        — unkonventionelle Ansaetze, was niemand erwartet
-   Agent 4: Kritiker          — Risiken, Gegenargumente, Failure-Modes
-   Agent 5: Visionaer         — ideale Loesung ohne Einschraenkungen
-   ```
+   | subagent_type | Rolle | Output |
+   |---------------|-------|--------|
+   | `agent-orchestrator:brainstormer-facts`     | Fakten-Sammler    | Harte Daten, Statistiken, existierende Loesungen mit Quellen |
+   | `agent-orchestrator:brainstormer-user`      | User-Perspektive  | Personas, Jobs-to-be-done, Pain Points mit Quellen |
+   | `agent-orchestrator:brainstormer-lateral`   | Querdenker        | Cross-domain-Analogien, Inversionen, Absurditaeten mit Kernel |
+   | `agent-orchestrator:brainstormer-critic`    | Kritiker          | Annahmen, Failure-Modes, Prior-Failures, Counter-Arguments |
+   | `agent-orchestrator:brainstormer-visionary` | Visionaer         | Ideal-End-State, Prinzipien, Nordstern-Satz |
 
-   **Rollen anpassen an Aufgabentyp** (siehe Tabelle weiter unten). Bei einer emotionalen Aufgabe braucht es vielleicht einen Empath statt eines Fakten-Sammlers. Bei etwas Verruecktem einen Chaos-Agent statt eines Kritikers.
+   **Rollen anpassen** wenn die Aufgabe exotisch ist (emotional, spielerisch, meta) — nutze die Tabelle "Aufgabentyp-Erkennung" weiter unten, und dispatch entweder die Standard-Agents mit modifiziertem Prompt oder baue Ad-hoc-Rollen inline.
 
-   Jeder Brainstormer darf bei Bedarf den `research-pipeline` Skill fuer Web-Recherche nutzen.
+   Jeder Brainstormer darf bei Bedarf den `research-pipeline` Skill fuer Web-Recherche nutzen (die Standard-Agent-Files erlauben WebSearch + WebFetch).
 
 3. **Ergebnisse konsolidieren und in NotebookLM laden**
    - Merge der 5 Brainstormer-Outputs in eine strukturierte Zusammenfassung
