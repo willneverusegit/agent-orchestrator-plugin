@@ -19,7 +19,7 @@ agent-orchestrator-plugin/
 ├── .gitignore              # settings.local.json, .agent-memory/, stackdumps
 ├── CLAUDE.md               # diese Datei
 ├── README.md               # Install + Usage
-└── tests/                  # (optional, Tranche C)
+└── tests/                  # validate-plugin.sh (Struktur-Tests aktiv); Tranche-C Behavioral-Tests ausstehend
 ```
 
 ## Architektur

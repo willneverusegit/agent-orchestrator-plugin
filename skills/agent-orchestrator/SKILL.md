@@ -54,6 +54,29 @@ Der User gibt dir ein Ziel. Du zerlegst es, recherchierst, planst, setzt um, pru
 
 ## Die 5 Phasen
 
+## Cross-Plugin-Hard-Dependencies
+
+Phase 3 (Execution) hat eine **harte Abhängigkeit** zu `multi-model-orchestrator:codex-swarm`.
+Wenn dieser Skill nicht installiert ist:
+
+- Erkennen via Skill-Liste-Check vor Phase 3 (kein Try-and-Hope)
+- **Explizite Fehlermeldung an den User** statt stiller Fallback auf inline-Opus-Self-Execution
+  ("`multi-model-orchestrator:codex-swarm` ist für Phase 3 erforderlich. Installiere mit
+  `claude plugin marketplace add willneverusegit/inception-sandbox` und
+  `claude plugin install multi-model-orchestrator --scope user`. Bei kleinen Tasks (≤2 Subtasks)
+  fällt der Skill ohnehin auf Opus-Self-Execution zurück — siehe Plateau-Regel unten.")
+- Plateau-Regel: Bei <3 unabhaengigen Subtasks ist Opus-Self-Execution explizit der gewollte
+  Pfad, kein Fallback. Der Hard-Dep gilt nur für echte Multi-Subtask-Decomposition.
+
+Andere Cross-Plugin-Erwartungen (alle weich, mit dokumentiertem Fallback):
+- Phase 1: `Agent` tool für Haiku-Brainstormer (Built-in, keine Plugin-Abhängigkeit)
+- Phase 1+2: `notebooklm` Standalone-Skill (notebooklm-py CLI) als RAG — Fallback: Brainstormer-Outputs
+  direkt in den Orchestrator-Kontext laden (siehe E2E-Test 2026-04-24, dort übersprungen).
+- Phase 3 (Synthese): `quality-gate` für Binary-Acceptance (Built-in via agentic-os) — Fallback:
+  inline Self-Critique mit Plateau-Kriterium.
+
+---
+
 ### Phase 1: Research & Brainstorming
 
 **Ziel:** Breites Wissen sammeln, verschiedene Perspektiven einholen, Wissensbasis aufbauen.
